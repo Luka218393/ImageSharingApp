@@ -1,15 +1,23 @@
 import { v4 as uuidv4 } from 'uuid';
 
-export class ImageContext{
+export class ImageWithContext{
     id: string
-    image: File
     gallery_id: string
     image_url: string
+    creator_name: string
 
-    constructor(id: null | string, gallery_id: string, imageUrl: string){
-        if (id == null) {this.id = uuidv4()}
-        else {this.id = id}
-        this.gallery_id = gallery_id
-        this.image_url = imageUrl
+
+     constructor(data: { id: string; gallery_id: string; image_url: string; creator_name: string }) {
+        this.id = data.id;
+        this.gallery_id = data.gallery_id;
+        this.image_url = data.image_url;
+        this.creator_name = data.creator_name;
     }
+
+    // Optional helper to create from JSON string
+    static fromJSON(json: string): ImageWithContext {
+        const data = JSON.parse(json);
+        return new ImageWithContext(data);
+    }
+
 }

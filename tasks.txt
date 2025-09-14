@@ -1,4 +1,5 @@
 - Create all models for database
+- Migrate to postgresSQL
 - create whole UI
 - Create all views for frontend
 

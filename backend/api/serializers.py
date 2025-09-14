@@ -4,7 +4,7 @@ from .models import ImageWithContext
 class ImageSerializer (serializers.ModelSerializer):
     class Meta:
         model = ImageWithContext
-        fields = ["image"]
+        fields = ["creator_name","image","gallery_id"]
     """
     def get_image(self, obj):
         request = self.context.get("request")

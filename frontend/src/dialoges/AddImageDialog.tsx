@@ -26,20 +26,15 @@ export const AddImageDialog: React.FC<{ ImageUploadDialogTrigger: () => void }> 
             async image => {
                 let formData = new FormData()
                 formData.append("image", image)
-
+                formData.append("creator_name", "Nomen Nescio")
+                formData.append("gallery_id", "b692b01c-8f3f-4c8d-94d6-557d6b75031e")
                 try {
-                    // let response = fetch("http://127.0.0.1:8000/image/",
-                    //     {
-                    //         method: "POST",
-                    //         body: formData
-                    //     }
-                    // )
-                    let response = await fetch("http://127.0.0.1:8000/media/gallery1/IMG_20230713_161544.jpg",
+                    let response = await fetch("http://127.0.0.1:8000/image/",
                         {
-                            method: "GET",
+                            method: "POST",
+                            body: formData
                         }
                     )
-
                     console.log(response.json())
                 }
                 catch (e) { console.error(e) }
