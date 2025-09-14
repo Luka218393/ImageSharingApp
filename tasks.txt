@@ -1,0 +1,7 @@
+- Create all models for database
+- create whole UI
+- Create all views for frontend
+
+
+- Security and authentification
+- Add licence
