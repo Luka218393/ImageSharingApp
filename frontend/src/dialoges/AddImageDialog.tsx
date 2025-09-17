@@ -4,7 +4,7 @@ import { ImageCard2 } from '../components/ImageCard'
 import { GrLinkNext } from "react-icons/gr";
 import { FiPlus } from "react-icons/fi"
 
-export const AddImageDialog: React.FC<{ ImageUploadDialogTrigger: () => void }> = ({ ImageUploadDialogTrigger }) => {
+export const AddImageDialog: React.FC<{ ImageUploadDialogTrigger: () => void, username: string, gallery_id: string }> = ({ ImageUploadDialogTrigger, username, gallery_id }) => {
 
     const handleChildClick = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -19,15 +19,18 @@ export const AddImageDialog: React.FC<{ ImageUploadDialogTrigger: () => void }> 
         }
     };
 
-
+    function removeImage(name: string){
+        let temp = images.filter(image => image.name != name)
+        setImages(temp)
+    }
 
     const postImages = () => {
         images.forEach(
             async image => {
                 let formData = new FormData()
                 formData.append("image", image)
-                formData.append("creator_name", "Nomen Nescio")
-                formData.append("gallery_id", "b692b01c-8f3f-4c8d-94d6-557d6b75031e")
+                formData.append("creator_name", username)
+                formData.append("gallery_id", gallery_id)//"b692b01c-8f3f-4c8d-94d6-557d6b75031e")
                 try {
                     let response = await fetch("http://127.0.0.1:8000/image/",
                         {
@@ -43,12 +46,14 @@ export const AddImageDialog: React.FC<{ ImageUploadDialogTrigger: () => void }> 
     }
 
     return (
-        <div className="bg-black/35 w-screen h-screen absolute z-100 flex justify-center items-center fixed" onClick={ImageUploadDialogTrigger}>
+        <> 
+        
+        <div className="bg-black/35 w-screen h-screen z-100 flex justify-center items-center fixed" onClick={ImageUploadDialogTrigger}>
             <div className="flex flex-col w-fit bg-white rounded-[32px] p-6 gap-4" onClick={handleChildClick}>
                 <div className=" w-fit h-fit grid lg:grid-cols-3 md:grid-cols-2 gap-x-6 gap-y-8 s:grid-cols-1">
                     {
                         images.map(
-                            image => (<ImageCard2 image={image} />)
+                            image => (<ImageCard2 image={image} removeImage = {removeImage}/>)
                         )
                     }
 
@@ -70,5 +75,6 @@ export const AddImageDialog: React.FC<{ ImageUploadDialogTrigger: () => void }> 
                 </div>
             </div>
         </div>
+        </>
     )
 }

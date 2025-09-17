@@ -1,8 +1,11 @@
-- Create all models for database
-- Migrate to postgresSQL
-- create whole UI
++ Create all models for database
++ create whole UI
+- Scale images based on need
+- add functionality to whole UI
 - Create all views for frontend
+- Add first time name set and gallery select(from link)
 
-
+- Migrate to postgresSQL
 - Security and authentification
 - Add licence
+- Upload files for phones optimization
