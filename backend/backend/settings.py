@@ -85,6 +85,14 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
+    #  'default': { // Change database on deploy
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': 'imageSharingDatabase',
+    #     'USER': 'root',
+    #     'PASSWORD': 'DB_PASSWORD',
+    #     'HOST': 'localhost',
+    #     'PORT': '5432',
+    # }
 }
 
 

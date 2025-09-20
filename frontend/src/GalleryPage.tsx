@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { ImageCard } from './components/ImageCard'
-import { AddImageDialog } from './dialoges/AddImageDialog';
+import { AddImageDialog } from './dialoges/AddImageDialog.tsx';
 //@ts-ignore
 import { ImageWithContext } from '../models/imageContext.ts';
 import { ImagePreview } from './components/ImagePreview.tsx';
@@ -31,12 +31,12 @@ export const GalleryPage: React.FC = () => {
     }
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:8000/gallery/${galleryId}`,
+        fetch(`http://127.0.0.1:8000/gallery/${galleryId}/`,
             {
                 method: "GET",
             }
         ).then(response => response.json())
-            .then(data => { let a = data.map((element: any) => ImageWithContext.fromJSON(element)); console.log(a); return a })
+            .then(data => data.map((element: any) => ImageWithContext.fromJSON(element)))
             .then(data => setImages(data))
     }, []);
 
@@ -58,7 +58,7 @@ export const GalleryPage: React.FC = () => {
                 <div className=" w-fit h-fit grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 gap-x-6 gap-y-8 s:grid-cols-1">
                     {
                         images?.map(image =>
-                            <ImageCard username={image.creator_name} imageURL={image.image_url} previewImage={ImagePreviewTrigger} selectImage = {ToggleImageFromSelection} />
+                            <ImageCard key = {image.image_url} username={image.creator_name} imageURL={image.image_url} previewImage={ImagePreviewTrigger} selectImage = {ToggleImageFromSelection} />
                         )
                     }
                     <FloatingButtons ImageUploadDialogTrigger={ImageUploadDialogTrigger} />

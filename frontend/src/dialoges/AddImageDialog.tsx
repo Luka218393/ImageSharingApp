@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import type { ChangeEvent } from "react";
-import { ImageCard2 } from '../components/ImageCard'
+import { ImageCard2 } from './../components/ImageCard'
 import { GrLinkNext } from "react-icons/gr";
 import { FiPlus } from "react-icons/fi"
+import imageCompression from "browser-image-compression";
+
+
+
 
 export const AddImageDialog: React.FC<{ ImageUploadDialogTrigger: () => void, username: string, gallery_id: string }> = ({ ImageUploadDialogTrigger, username, gallery_id }) => {
 
@@ -12,14 +16,34 @@ export const AddImageDialog: React.FC<{ ImageUploadDialogTrigger: () => void, us
 
     const [images, setImages] = useState<File[]>([]);
 
-    const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const handleImageUpload = async (event: ChangeEvent<HTMLInputElement>) => {
+
         if (event.target.files) {
-            const files = Array.from(event.target.files);
-            setImages((prev) => [...prev, ...files]);
+            const images = Array.from(event.target.files);
+            const options = {
+                "maxSizeMB": 3,
+                "maxWidthOrHeight": 1920,
+                "useWebWorker": true,
+                "preserveExif": false,
+                "fileType": 'image/jpeg'
+            }
+            console.log(images[0].size / 1024 / 1024)
+            for (const image of images) {//Processes images one by one -- add status bar
+                try {
+                    const compressedBlob = await imageCompression(image, options)
+                    const compressedFile = new File(
+                        [compressedBlob],
+                        image.name,
+                        { type: compressedBlob.type }
+                    );
+                    setImages((prev) => [...prev, compressedFile]);
+                }
+                catch (error) { console.error(error) }
+            }
         }
     };
 
-    function removeImage(name: string){
+    function removeImage(name: string) {
         let temp = images.filter(image => image.name != name)
         setImages(temp)
     }
@@ -38,7 +62,7 @@ export const AddImageDialog: React.FC<{ ImageUploadDialogTrigger: () => void, us
                             body: formData
                         }
                     )
-                    console.log(response.json())
+                    console.log(await response.json())//Add confirmation dialog
                 }
                 catch (e) { console.error(e) }
             }
@@ -46,35 +70,40 @@ export const AddImageDialog: React.FC<{ ImageUploadDialogTrigger: () => void, us
     }
 
     return (
-        <> 
-        
-        <div className="bg-black/35 w-screen h-screen z-100 flex justify-center items-center fixed" onClick={ImageUploadDialogTrigger}>
-            <div className="flex flex-col w-fit bg-white rounded-[32px] p-6 gap-4" onClick={handleChildClick}>
-                <div className=" w-fit h-fit grid lg:grid-cols-3 md:grid-cols-2 gap-x-6 gap-y-8 s:grid-cols-1">
-                    {
-                        images.map(
-                            image => (<ImageCard2 image={image} removeImage = {removeImage}/>)
-                        )
-                    }
-
-                </div>
-                <div className='w-fill h-fit flex flex-row-reverse text-white justify-between'>
-                    <GrLinkNext className='cursor-pointer bg-purple-800 p-2 rounded-[10px]' size="64px" onClick={postImages} />
-                    <input
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        className="bg-purple-300"
-                        style={{ display: "none" }}
-                        id="imageInput"
-                    />
-                    <label htmlFor="imageInput">
-                        <FiPlus className='cursor-pointer bg-purple-800 p-2 rounded-[10px]' size="64px" />
-                    </label>
+        <>
+            <div
+                className="fixed inset-0 bg-black/60 z-[9999] flex justify-center items-center overflow-y-auto py-10"
+                style={{ overscrollBehaviorY: "contain" }}
+                onClick={ImageUploadDialogTrigger}
+            >
+                <div
+                    className="flex flex-col w-fit max-h-[80vh] bg-white rounded-[32px] p-6 gap-4 z-[10000] overflow-y-auto"
+                    onClick={handleChildClick}
+                >
+                    <div className="w-fit h-fit grid lg:grid-cols-3 md:grid-cols-2 gap-x-6 gap-y-8 s:grid-cols-1">
+                        {
+                            images.map(
+                                image => (<ImageCard2 key={image.name} image={image} removeImage={removeImage} />)
+                            )
+                        }
+                    </div>
+                    <div className='w-fill h-fit flex flex-row-reverse text-white justify-between'>
+                        <GrLinkNext className='cursor-pointer bg-purple-800 p-2 rounded-[10px]' size="64px" onClick={postImages} />
+                        <input
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            className="bg-purple-300"
+                            style={{ display: "none" }}
+                            id="imageInput"
+                        />
+                        <label htmlFor="imageInput">
+                            <FiPlus className='cursor-pointer bg-purple-800 p-2 rounded-[10px]' size="64px" />
+                        </label>
+                    </div>
                 </div>
             </div>
-        </div>
         </>
     )
 }

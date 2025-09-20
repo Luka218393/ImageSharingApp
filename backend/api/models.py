@@ -5,7 +5,9 @@ import json
 
 # Create your models here.
 def upload_to(instance, filename):
-    return "media/{0}/{1}".format(instance.gallery_id, filename)
+    return "media/full/{0}/{1}".format(instance.gallery_id, filename)
+def upload_thumbnail(instance, filename):
+    return "media/thumbnails/{0}/{1}".format(instance.gallery_id, filename)
 
 class Gallery (models.Model):
     id = models.UUIDField(default = uuid.uuid4, unique=True, primary_key=True)
@@ -19,8 +21,8 @@ class Gallery (models.Model):
 class ImageWithContext (models.Model):
     id = models.UUIDField(default = uuid.uuid4, unique=True, primary_key=True)
     gallery_id = models.ForeignKey(Gallery, on_delete = models.CASCADE, null=True, related_name="gallery_images")#remove blank
-    image = models.ImageField(upload_to=upload_to)  
-    # cropped_image = models.ImageField(upload_to="media/gallery2/")
+    image = models.ImageField(upload_to=upload_to, blank = False, null= False)  
+    thumbnail_url = models.CharField(max_length=100, default = "")#Change this accordingly
     creator_name = models.CharField(max_length=50)
     created = models.DateTimeField(auto_now=True)
     
