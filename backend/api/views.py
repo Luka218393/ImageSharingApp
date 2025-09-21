@@ -3,13 +3,30 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import ImageWithContext
 from .serializers import ImageSerializer
+from PIL import Image as pillow
+from django.conf import settings
+import os
+from .imagemanager import saveImage
 
 
 @api_view(["POST"])
 def postImage(request):
-    serializer = ImageSerializer(data = request.data)
+    data = request.data
+    image = data.pop("image")[0]
+#    thumbnail = data.pop("thumbnail")[0]
+    
+    paths = saveImage(image, data["gallery_id"])
+    
+    if type(paths) == type(""):
+        return Response({"ERROR": paths})
+    
+    data["image_url"] = paths[0]
+    data["thumbnail_url"] = paths[1]
+        
+    serializer = ImageSerializer(data = data)
 
     if serializer.is_valid():
+        print('serializer is valid')
         serializer.save()
         
     else: 

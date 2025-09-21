@@ -6,30 +6,20 @@ import { ImageWithContext } from '../models/imageContext.ts';
 import { ImagePreview } from './components/ImagePreview.tsx';
 import { FloatingButtons } from './components/FloatingButtons.tsx';
 
-export const GalleryPage: React.FC = () => {
 
-    //let gallery = new Gallery(null, "123" )// make user chose the gallery to view
+/* 
+Page where images of a gallery are displayed
+*/
+export const GalleryPage: React.FC<{galleryId: string, username: string}> = ({galleryId, username}) => {
 
-    let [imagePreviewURL, setImagePreviewURL] = useState<string | null>(null)
+    let [previewOfImage, setPreviewOfImage] = useState<string | null>(null)
     let [imageUploadDialog, setImageUploadDialog] = useState(false)
     let [images, setImages] = useState<ImageWithContext[]>()
-    let [imageSelection, setImageSelection] = useState<string[]>([])
-    let [username, setUsername] = useState<string>("The Annihilator of Worlds")
-    let [galleryId, setGalleryId] = useState<string>("b692b01c-8f3f-4c8d-94d6-557d6b75031e")
-
 
     function ImageUploadDialogTrigger() { setImageUploadDialog(!imageUploadDialog) }
-    function ImagePreviewTrigger(imageURL: string | null) { setImagePreviewURL(imageURL) }
-    function ToggleImageFromSelection(imageURL: string) {
-        if (imageURL in imageSelection) {
-            setImageSelection(imageSelection.filter(link => link !== imageURL))
-        }
-        else{
-           imageSelection.push(imageURL)
-           setImageSelection(imageSelection)
-        }
-    }
+    function ImagePreviewTrigger(imageURL: string | null) { setPreviewOfImage(imageURL) }
 
+    //Fetch image and thumbnail URLs from the backend & convert to object
     useEffect(() => {
         fetch(`http://127.0.0.1:8000/gallery/${galleryId}/`,
             {
@@ -37,8 +27,9 @@ export const GalleryPage: React.FC = () => {
             }
         ).then(response => response.json())
             .then(data => data.map((element: any) => ImageWithContext.fromJSON(element)))
-            .then(data => setImages(data))
+            .then(data => setImages(data.reverse()))
     }, []);
+
 
     return (
         <>
@@ -49,16 +40,16 @@ export const GalleryPage: React.FC = () => {
                 )
             }
             {
-                imagePreviewURL != null &&
+                previewOfImage != null &&
                 (
-                    <ImagePreview imageURL={imagePreviewURL!} ImagePreviewTrigger={ImagePreviewTrigger} />
+                    <ImagePreview imageURL={previewOfImage!} ImagePreviewTrigger={ImagePreviewTrigger} />
                 )
             }
             <div className=' py-12 flex justify-center w-fill'>
                 <div className=" w-fit h-fit grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 gap-x-6 gap-y-8 s:grid-cols-1">
                     {
-                        images?.map(image =>
-                            <ImageCard key = {image.image_url} username={image.creator_name} imageURL={image.image_url} previewImage={ImagePreviewTrigger} selectImage = {ToggleImageFromSelection} />
+                         images?.map(image =>// just pass the image
+                            <ImageCard key = {image.image_url} username={image.creator_name} imageURL={image.image_url} thumbnailURL = {image.thumbnail_url} previewImage={ImagePreviewTrigger} />
                         )
                     }
                     <FloatingButtons ImageUploadDialogTrigger={ImageUploadDialogTrigger} />

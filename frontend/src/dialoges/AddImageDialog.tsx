@@ -4,42 +4,29 @@ import { ImageCard2 } from './../components/ImageCard'
 import { GrLinkNext } from "react-icons/gr";
 import { FiPlus } from "react-icons/fi"
 import imageCompression from "browser-image-compression";
+import { ImTab } from "react-icons/im";
 
 
 
-
+/*
+A dialog that allows user to select, check and upload images to the server
+*/
 export const AddImageDialog: React.FC<{ ImageUploadDialogTrigger: () => void, username: string, gallery_id: string }> = ({ ImageUploadDialogTrigger, username, gallery_id }) => {
 
-    const handleChildClick = (e: React.MouseEvent) => {
+    const disableParentOnClick = (e: React.MouseEvent) => {
         e.stopPropagation();
     };
 
     const [images, setImages] = useState<File[]>([]);
 
-    const handleImageUpload = async (event: ChangeEvent<HTMLInputElement>) => {
-
+    //Adds images to state
+    //Creates thumbnails for the images in the background
+    const uploadImages = async (event: ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
+
             const images = Array.from(event.target.files);
-            const options = {
-                "maxSizeMB": 3,
-                "maxWidthOrHeight": 1920,
-                "useWebWorker": true,
-                "preserveExif": false,
-                "fileType": 'image/jpeg'
-            }
-            console.log(images[0].size / 1024 / 1024)
-            for (const image of images) {//Processes images one by one -- add status bar
-                try {
-                    const compressedBlob = await imageCompression(image, options)
-                    const compressedFile = new File(
-                        [compressedBlob],
-                        image.name,
-                        { type: compressedBlob.type }
-                    );
-                    setImages((prev) => [...prev, compressedFile]);
-                }
-                catch (error) { console.error(error) }
-            }
+            setImages((prev) => [...prev, ...images])
+
         }
     };
 
@@ -54,7 +41,7 @@ export const AddImageDialog: React.FC<{ ImageUploadDialogTrigger: () => void, us
                 let formData = new FormData()
                 formData.append("image", image)
                 formData.append("creator_name", username)
-                formData.append("gallery_id", gallery_id)//"b692b01c-8f3f-4c8d-94d6-557d6b75031e")
+                formData.append("gallery_id", gallery_id)
                 try {
                     let response = await fetch("http://127.0.0.1:8000/image/",
                         {
@@ -78,12 +65,12 @@ export const AddImageDialog: React.FC<{ ImageUploadDialogTrigger: () => void, us
             >
                 <div
                     className="flex flex-col w-fit max-h-[80vh] bg-white rounded-[32px] p-6 gap-4 z-[10000] overflow-y-auto"
-                    onClick={handleChildClick}
+                    onClick={disableParentOnClick}
                 >
                     <div className="w-fit h-fit grid lg:grid-cols-3 md:grid-cols-2 gap-x-6 gap-y-8 s:grid-cols-1">
                         {
                             images.map(
-                                image => (<ImageCard2 key={image.name} image={image} removeImage={removeImage} />)
+                                (image) => (<ImageCard2 key={image.name} image={ image} removeImage={removeImage} />)
                             )
                         }
                     </div>
@@ -93,7 +80,7 @@ export const AddImageDialog: React.FC<{ ImageUploadDialogTrigger: () => void, us
                             type="file"
                             multiple
                             accept="image/*"
-                            onChange={handleImageUpload}
+                            onChange={uploadImages}
                             className="bg-purple-300"
                             style={{ display: "none" }}
                             id="imageInput"

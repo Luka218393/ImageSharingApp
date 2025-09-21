@@ -1,11 +1,15 @@
 + Create all models for database
 + create whole UI
-- Scale images based on need
++ Scale images / thumbnails
+- Limit size for images (cut them)
 - add functionality to whole UI
 - Create all views for frontend
 - Add first time name set and gallery select(from link)
+- Add videos
 
 - Migrate to postgresSQL
 - Security and authentification
+    - add error handling
+    - check image sizes
 - Add licence
 - Upload files for phones optimization
