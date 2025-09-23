@@ -1,50 +1,45 @@
 import { useEffect, useState } from "react";
 import { IoMdMore, IoMdDownload } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
+import { downloadFile } from "../Functions"
+import type { ImageContext } from "../../models/imageContext";
 
-export const ImageCard: React.FC<{ username: string, imageURL: string, thumbnailURL: string, previewImage: (imageURL: string) => void }> = ({ username, imageURL, previewImage, thumbnailURL }) => {
+
+/*
+Conponents that display image 
+*/
+export const ImageCard: React.FC<{ imageContext: ImageContext, username: string, previewImage: (imageURL: string) => void }> = ({imageContext, username, previewImage }) => {
 
   let [dropdownVisibility, setDropdownVisibility] = useState<Boolean>(false)
-  function DropdownVisibilityTrigger() { setDropdownVisibility(!dropdownVisibility); console.log(dropdownVisibility) }
+  function dropdownVisibilityTrigger() { setDropdownVisibility(!dropdownVisibility) }
 
 
-  function DeleteImage() {
-    //TODO
-  }
-
-  //Why does this work it is ugly
-  function downloadImage() {
-    fetch(imageURL, { mode: "cors" })
-      .then((res) => res.blob())
-      .then((blob) => {
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "reactflow.png"; // or any name you want
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        URL.revokeObjectURL(link.href);
-      })
-      .catch(console.error);
+  function deleteImage() {
+    fetch(
+      `http://127.0.0.1:8000/delete/image/${imageContext.id}/`,
+      {
+        method:"DELETE"
+      }
+    )
   }
 
   return (
 
     <div className="w-[320px] h-fit relative">
-      <img src={thumbnailURL} className=" cursor-pointer object-cover w-[320px] h-[240px] drop-shadow-xl/20 rounded-lg z-0 " onClick={() => previewImage(imageURL)}></img>
+      <img src={imageContext.thumbnail_url} className=" cursor-pointer object-cover w-[320px] h-[240px] drop-shadow-xl/20 rounded-lg z-0 " onClick={() => previewImage(imageContext.image_url)}></img>
       <div className="bg-amber-700">
-        <button onClick={DropdownVisibilityTrigger} className=" cursor-pointer absolute top-2 left-2 bg-black/50 p-2 rounded-full text-white hover:bg-black/70 transition">
+        <button onClick={dropdownVisibilityTrigger} className=" cursor-pointer absolute top-2 left-2 bg-black/50 p-2 rounded-full text-white hover:bg-black/70 transition">
           <IoMdMore size="32px" />
         </button>
         {dropdownVisibility &&
           (
             <div className="bg-black/45 absolute top-15 left-2 text-white p-2 rounded-md font-medium flex flex-col">
-              <button onClick={DeleteImage} className="text-red-500 cursor-pointer hover:underline">Delete</button>
+              <button onClick={deleteImage} className="text-red-500 cursor-pointer hover:underline">Delete</button>
             </div>
           )
         }
       </div>
-      <button onClick={downloadImage} className="cursor-pointer absolute top-2 right-2 bg-black/50 p-2 rounded-full text-white hover:bg-black/70 transition">
+      <button onClick={() => downloadFile(imageContext.image_url, username)} className="cursor-pointer absolute top-2 right-2 bg-black/50 p-2 rounded-full text-white hover:bg-black/70 transition">
         <IoMdDownload size="32px" />
       </button>
       <div className="flex flex-row w-fill px-6 py-2 justify-between">

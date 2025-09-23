@@ -1,13 +1,18 @@
 import { IoMdDownload } from "react-icons/io";
 import { FiPlus } from "react-icons/fi";
 import { useState } from "react";
+import { downloadFile } from "../Functions";
 
-export const FloatingButtons: React.FC<{ ImageUploadDialogTrigger: () => void }> = ({ ImageUploadDialogTrigger }) => {
+export const FloatingButtons: React.FC<{ ImageUploadDialogTrigger: () => void, galleryId: string,  }> = ({ ImageUploadDialogTrigger, galleryId }) => {
 
     let [downloadDialog, setDownloadDialog] = useState<Boolean>(false)
     function ToggleDownloadDialog() { setDownloadDialog(!downloadDialog) }
-    function Download(){}
-    
+    function download(){}
+    function downloadAll(){
+        downloadFile(`http://127.0.0.1:8000/download/${galleryId}/`, galleryId)
+    }
+
+
     return (
         <div className="fixed w-fit h-fit flex flex-col gap-4 right-4 bottom-4 justify-center items-center">
             <div>
@@ -15,9 +20,9 @@ export const FloatingButtons: React.FC<{ ImageUploadDialogTrigger: () => void }>
                     downloadDialog &&
                     (
                         <div className="bg-black/60 flex flex-col w-full gap-1 text-xl font-medium text-white rounded-2xl p-2 my-2">
-                            <button className = "hover:underline cursor-pointer" onClick={Download}>All</button>
-                            <button className = "hover:underline cursor-pointer" onClick={Download}>New</button>
-                            <button className = "hover:underline cursor-pointer" onClick={Download}>Select</button>
+                            <button className = "hover:underline cursor-pointer" onClick={downloadAll}>All</button>
+                            <button className = "hover:underline cursor-pointer" onClick={download}>New</button>
+                            <button className = "hover:underline cursor-pointer" onClick={download}>Select</button>
                         </div>
                     )
                 }

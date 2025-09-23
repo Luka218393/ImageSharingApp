@@ -1,12 +1,15 @@
 + Create all models for database
 + create whole UI
 + Scale images / thumbnails
-- Limit size for images (cut them)
-- add functionality to whole UI
-- Create all views for frontend
++ add functionality to UI
+- Create all views for frontend (create gallery, user, landing page, footer)
 - Add first time name set and gallery select(from link)
 - Add videos
+- Limit size for images (cut them)
+- Tidy up code
 
+
+- Proper responses from backend
 - Migrate to postgresSQL
 - Security and authentification
     - add error handling
